@@ -46,8 +46,7 @@ class scene1 extends Phaser.Scene
         this.startgame.play();
 
         this.add.text(config.width/2-300,config.height/2-200,"Space Wars !!",{ 
-        fontSize: '150px',
-        fontFamily: 'Chiller',
+        fontSize: '90px',
         fontStyle: 'bold',
         color: 'blue',
         align: 'center' });
