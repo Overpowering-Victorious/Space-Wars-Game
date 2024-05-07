@@ -45,7 +45,7 @@ class scene1 extends Phaser.Scene
         this.startgame=this.sound.add("startgame");
         this.startgame.play();
 
-        this.add.text(config.width/2-300,config.height/2-200,"Space Wars !!",{ 
+        this.add.text(config.width/2-290,config.height/2-150,"SpaceWars!!",{ 
         fontSize: '90px',
         fontStyle: 'bold',
         color: 'blue',
