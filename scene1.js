@@ -35,6 +35,8 @@ class scene1 extends Phaser.Scene
         this.load.audio("ingame",["assets/audio/ingame.ogg","assets/audio/ingame.mp3"]);
         this.load.audio("startgame",["assets/audio/startgame.ogg","assets/audio/startgame.mp3"]);
         this.load.audio("victory",["assets/audio/victory.ogg","assets/audio/victory.mp3"]);
+        this.load.audio("thrusters",["assets/audio/thrusters.ogg","assets/audio/thrusters.mp3"]);
+
     }
 
     create()
@@ -108,6 +110,16 @@ class scene1 extends Phaser.Scene
             frames: this.anims.generateFrameNumbers("power-up",{
                 start:0,
                 end:1
+            }),
+            frameRate: 15,
+            repeat: -1,
+        });
+        
+        this.anims.create({
+            key: "gray",
+            frames: this.anims.generateFrameNumbers("power-up",{
+                start:2,
+                end:3
             }),
             frameRate: 15,
             repeat: -1,

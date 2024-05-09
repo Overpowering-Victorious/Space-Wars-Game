@@ -19,7 +19,10 @@ const hurt_no=[{start:4,end:6},{start:2,end:4},{start:0,end:2}];
 
 var gameSettings = {
     playerSpeed:300,
+    shipSpeed:[1,2,3]
 }
+
+let pauseShip=false;
 
 window.onload=function()
 {

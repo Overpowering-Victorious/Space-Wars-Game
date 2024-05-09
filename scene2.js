@@ -15,6 +15,10 @@ class scene2 extends Phaser.Scene
         this.ship2=this.add.sprite(Phaser.Math.Between(20,config.width-20),-1000,"ship2");
         this.ship3=this.add.sprite(Phaser.Math.Between(20,config.width-20),-1000,"ship3");
         this.player=this.physics.add.sprite(config.width/2 ,config.height/2 +250, "player");
+        this.red=this.physics.add.sprite(Phaser.Math.Between(20,config.width-20),-1000, "power-up");
+        this.gray=this.physics.add.sprite(Phaser.Math.Between(20,config.width-20),-1000, "power-up");
+
+        
         
         this.cursorKeys=this.input.keyboard.createCursorKeys();
         this.player.setCollideWorldBounds(true);
@@ -32,6 +36,11 @@ class scene2 extends Phaser.Scene
 
         this.projectiles = this.add.group();
         this.enemy=this.physics.add.group();
+        this.power=this.physics.add.group();
+
+        this.power.add(this.red);
+        this.power.add(this.gray);
+
         this.enemy.add(this.ship1);
         this.enemy.add(this.ship2);
         this.enemy.add(this.ship3);
@@ -39,18 +48,8 @@ class scene2 extends Phaser.Scene
         this.physics.add.overlap(this.player, this.enemy, this.hurtPlayer, null, this);
         this.physics.add.overlap(this.projectiles, this.enemy, this.hitEnemy, null, this);
 
-        // var graphics=this.add.graphics();
-        // graphics.fillStyle(0x000000,1);
-        // graphics.beginPath();
-        // graphics.moveTo(0,0);
-        // graphics.lineTo(config.width,0);
-        // graphics.lineTo(config.width,35);
-        // graphics.lineTo(0,35);
-        // graphics.lineTo(0,0);
-        // graphics.closePath();
-        // graphics.fillPath();
-
         this.score=0;
+        this.lastscore=0;
         this.scorelabel=this.add.bitmapText(10,10,"font","SCORE: 0000000",30);
         this.highscorelabel=this.add.bitmapText(425,10,"font","HIGHSCORE: "+this.zeroPad(highscore,7),30);
         this.life=this.add.sprite(50,55,"life");
@@ -65,12 +64,11 @@ class scene2 extends Phaser.Scene
 
     update(){
         this.background.tilePositionY-=0.3;
-        this.moveShip(this.ship1,1);
-        this.moveShip(this.ship2,2);
-        this.moveShip(this.ship3,3);
+        this.moveShip(this.ship1,0);
+        this.moveShip(this.ship2,1);
+        this.moveShip(this.ship3,2);
         this.movePlayerManager();
         if(Phaser.Input.Keyboard.JustDown(this.spacebar)){
-            console.log("Fire !!");
             this.shootBeam();
         }
         for(var i=0; i<this.projectiles.getChildren().length; i++)
@@ -80,9 +78,11 @@ class scene2 extends Phaser.Scene
         }
     }
 
-    moveShip(ship,speed)
+    moveShip(ship,id)
     {
-        ship.y+=speed;
+        if(pauseShip)
+            return;
+        ship.y+=gameSettings.shipSpeed[id];
         if(ship.y>config.height)
             this.resetShip(ship);
     }
@@ -99,6 +99,7 @@ class scene2 extends Phaser.Scene
         var x = config.width/2;
         var y = config.height;
         this.player.enableBody(true, x, y, true, true);
+        this.spacebar = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
         this.player.alpha=0.5;
 
         var tween=this.tweens.add({
@@ -116,24 +117,14 @@ class scene2 extends Phaser.Scene
 
     hurtPlayer(player,ship)
     {
-        var exp1=new Explosion(this,ship.x,ship.y);
-        this.explosionSound.play();
-        if(ship==this.ship1)
-            this.score+=1;
-        else if(ship==this.ship2)
-            this.score+=2;
-        else
-            this.score+=3;
-        highscore=Math.max(highscore,this.score);
-        var fscore=this.zeroPad(this.score,7);
-        var fhighscore=this.zeroPad(highscore,7);
-        this.scorelabel.text="SCORE: "+fscore;
-        this.highscorelabel.text="HIGHSCORE: "+fhighscore;
-        this.resetShip(ship);
-
         if(this.player.alpha < 1){
             return;
         }
+        var exp1=new Explosion(this,ship.x,ship.y);
+        this.explosionSound.play();
+        this.resetShip(ship);
+
+        this.input.keyboard.removeKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
         var exp2=new Explosion(this,player.x,player.y);
         this.hurt.play();
         player.disableBody(true, true);
@@ -170,6 +161,43 @@ class scene2 extends Phaser.Scene
         var fhighscore=this.zeroPad(highscore,7);
         this.scorelabel.text="SCORE: "+fscore;
         this.highscorelabel.text="HIGHSCORE: "+fhighscore;
+        if(this.score%100<3 && this.score>97+this.lastscore)
+        {
+            this.lastscore=this.score;
+            this.ingame.stop();
+            pauseShip=true;
+            this.enemy.getChildren().forEach(ship => {
+                var explosion1=new Explosion(this,ship.x,ship.y);
+                this.explosionSound.play();
+                this.resetShip(ship);
+            });
+            this.thrusters=this.sound.add("thrusters");
+            this.thrusters.play();
+            this.tweens.add({
+                targets: this.background,
+                tilePositionY: this.background.tilePositionY-500,
+                ease: 'Linear',
+                duration: 2500,
+                onComplete: function () {
+                    this.thrusters.stop();
+                    this.victory=this.sound.add("victory");
+                    this.victory.play();
+                    this.tweens.add({
+                        targets: this.background,
+                        tilePositionY: this.background.tilePositionY-100,
+                        ease: 'Linear',
+                        duration: 2500,
+                        onComplete: function () {
+                            pauseShip = false;
+                            this.increaseValues(gameSettings);
+                            this.ingame.play();
+                        },
+                        callbackScope: this
+                    });
+                },
+                callbackScope: this
+            });
+        }
     }
 
     zeroPad(num,size)
@@ -190,11 +218,9 @@ class scene2 extends Phaser.Scene
     movePlayerManager()
     {
         if(this.cursorKeys.left.isDown){
-            console.log("Left arrow key pressed");
             this.player.setVelocityX(-gameSettings.playerSpeed);
         }
         else if(this.cursorKeys.right.isDown){
-            console.log("Right arrow key pressed");
             this.player.setVelocityX(gameSettings.playerSpeed);
         }
         else{
@@ -202,11 +228,9 @@ class scene2 extends Phaser.Scene
         }
 
         if(this.cursorKeys.up.isDown){
-            console.log("Up arrow key pressed");
             this.player.setVelocityY(-gameSettings.playerSpeed);
         }
         else if(this.cursorKeys.down.isDown){
-            console.log("Down arrow key pressed");
             this.player.setVelocityY(gameSettings.playerSpeed);
         }
         else{
@@ -214,10 +238,13 @@ class scene2 extends Phaser.Scene
         }
     }
 
-    destroyShip(pointer, gameObject)
-    {
-        gameObject.setTexture("explosion");
-        gameObject.setScale(2);
-        gameObject.play("explode");
+    increaseValues(obj) {
+        for (let prop in obj) {
+            if (typeof obj[prop] === 'number' && obj[prop]<500) {
+                obj[prop] += 20;
+            } else if (Array.isArray(obj[prop])) {
+                obj[prop] = obj[prop].map(value => value +0.5);
+            }
+        }
     }
 }
