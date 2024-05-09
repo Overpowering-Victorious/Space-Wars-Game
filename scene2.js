@@ -161,7 +161,7 @@ class scene2 extends Phaser.Scene
         var fhighscore=this.zeroPad(highscore,7);
         this.scorelabel.text="SCORE: "+fscore;
         this.highscorelabel.text="HIGHSCORE: "+fhighscore;
-        if(this.score%100<3 && this.score>97+this.lastscore)
+        if(this.score%20<3 && this.score>17+this.lastscore)
         {
             this.lastscore=this.score;
             this.ingame.stop();
