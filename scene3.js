@@ -13,6 +13,7 @@ class scene3 extends Phaser.Scene
         this.input.on('pointerdown', () => {
             this.gameover.stop();
             lf=3;
+            power=1;
             gameSettings.playerSpeed=300;
             gameSettings.shipSpeed=[1,2,3];
             this.scene.start("bootgame");

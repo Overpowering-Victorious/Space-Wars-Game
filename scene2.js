@@ -17,8 +17,11 @@ class scene2 extends Phaser.Scene
         this.player=this.physics.add.sprite(config.width/2 ,config.height/2 +250, "player");
         this.red=this.physics.add.sprite(Phaser.Math.Between(20,config.width-20),-1000, "power-up");
         this.gray=this.physics.add.sprite(Phaser.Math.Between(20,config.width-20),-1000, "power-up");
+        this.bullet=this.add.sprite(10,config.height-10,"beam");
 
-        
+        this.red.setActive(false).setVisible(false);
+        this.gray.setActive(false).setVisible(false);
+
         
         this.cursorKeys=this.input.keyboard.createCursorKeys();
         this.player.setCollideWorldBounds(true);
@@ -28,18 +31,23 @@ class scene2 extends Phaser.Scene
         this.ship2.setScale(2);
         this.ship3.setScale(2);
         this.player.setScale(2);
+        this.red.setScale(2);
+        this.gray.setScale(2);
+        this.bullet.setScale(2);
 
         this.ship1.play("anim_ship1");
         this.ship2.play("anim_ship2");
         this.ship3.play("anim_ship3");
         this.player.play("thrust");
+        this.red.play("red");
+        this.gray.play("gray");
 
         this.projectiles = this.add.group();
         this.enemy=this.physics.add.group();
-        this.power=this.physics.add.group();
+        this.powerups=this.physics.add.group();
 
-        this.power.add(this.red);
-        this.power.add(this.gray);
+        this.powerups.add(this.red);
+        this.powerups.add(this.gray);
 
         this.enemy.add(this.ship1);
         this.enemy.add(this.ship2);
@@ -47,11 +55,18 @@ class scene2 extends Phaser.Scene
 
         this.physics.add.overlap(this.player, this.enemy, this.hurtPlayer, null, this);
         this.physics.add.overlap(this.projectiles, this.enemy, this.hitEnemy, null, this);
+        this.physics.add.overlap(this.player, this.powerups, this.getPower, null, this);
+        this.physics.add.collider(this.projectiles, this.powerups, function(projectile,powerUp){
+            projectile.destroy();
+        });
 
         this.score=0;
         this.lastscore=0;
+        this.bulletCount=50;
         this.scorelabel=this.add.bitmapText(10,10,"font","SCORE: 0000000",30);
         this.highscorelabel=this.add.bitmapText(425,10,"font","HIGHSCORE: "+this.zeroPad(highscore,7),30);
+        this.bulletcnt=this.add.text(30,config.height-20,"X "+this.bulletCount, { fontSize: '15px', fontStyle: "bold"});
+
         this.life=this.add.sprite(50,55,"life");
         this.life.setScale(3);
 
@@ -67,6 +82,8 @@ class scene2 extends Phaser.Scene
         this.moveShip(this.ship1,0);
         this.moveShip(this.ship2,1);
         this.moveShip(this.ship3,2);
+        this.movePowerUp(this.red);
+        this.movePowerUp(this.gray);
         this.movePlayerManager();
         if(Phaser.Input.Keyboard.JustDown(this.spacebar)){
             this.shootBeam();
@@ -76,6 +93,63 @@ class scene2 extends Phaser.Scene
             var beam=this.projectiles.getChildren()[i];
             beam.update();
         }
+        timer++;
+        if(timer%mod==0)
+        {
+            timer=0;
+            if(this.bulletCount<50)
+                this.bulletCount++;
+        }
+        this.bulletcnt.text="X "+this.bulletCount;
+    }
+
+    resetPowerUp(powerUp)
+    {
+        var x=Phaser.Math.Between(20, config.width - 20);
+        var y=-1000;
+        powerUp.enableBody(true, x, y, true, true);
+    }
+
+    movePowerUp(powerUp)
+    {
+        if (pauseShip) {
+            return;
+        }
+        if (!powerUp.visible) {
+            if (Phaser.Math.Between(0, 99999) <=power) {
+                this.resetPowerUp(powerUp);
+                powerUp.setActive(true).setVisible(true);
+                powerUp.setBounce(0.5);
+            }
+        } else {
+            powerUp.y += 1;
+            if(powerUp.y>0)
+                powerUp.setCollideWorldBounds(true);
+            if(powerUp.y>config.height-50)
+                powerUp.setCollideWorldBounds(false);
+            if (powerUp.y > config.height) {
+                this.resetPowerUp(powerUp);
+                powerUp.setActive(false).setVisible(false);
+            }
+        }
+    }
+
+    getPower(player, powerUp)
+    {
+        if(powerUp==this.gray)
+        {
+            player.alpha=0.5;
+            this.time.addEvent({
+                delay: 10000,
+                callback: () => {
+                    this.player.alpha = 1;
+                },
+                callbackScope: this,
+                loop: false,
+            });
+        }
+        powerUp.disableBody(true,true);
+        powerUp.setActive(false).setVisible(false);
     }
 
     moveShip(ship,id)
@@ -189,6 +263,8 @@ class scene2 extends Phaser.Scene
                         duration: 2500,
                         onComplete: function () {
                             pauseShip = false;
+                            power+=2;
+                            mod-=(mod*(1/10));
                             this.increaseValues(gameSettings);
                             this.ingame.play();
                         },
@@ -211,7 +287,10 @@ class scene2 extends Phaser.Scene
 
     shootBeam()
     {
+        if(this.bulletCount==0)
+            return;
         var beam=new Beam(this);
+        this.bulletCount--;
         this.lasergun.play();
     }
 
