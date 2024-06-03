@@ -13,7 +13,7 @@ var config={
     }
 }
 
-var highscore=0,lf=3,power=1,timer=0,mod=400;
+var highscore=0,lf=3,power=1,timer=0,mod=400,max_bullet=50,lspeed=320;
 
 const hurt_no=[{start:4,end:6},{start:2,end:4},{start:0,end:2}];
 

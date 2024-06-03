@@ -16,6 +16,7 @@ class scene1 extends Phaser.Scene
         ];
 
         const randomImagePath = Phaser.Math.RND.pick(imagePaths);
+        console.log(randomImagePath);
 
         this.load.image("home", "assets/home.png");
         this.load.image("background", randomImagePath);
@@ -27,6 +28,8 @@ class scene1 extends Phaser.Scene
         this.load.spritesheet("beam", "assets/sps/beam.png", {frameWidth:16,frameHeight:16});
         this.load.spritesheet("power-up", "assets/sps/power-up.png", {frameWidth:16,frameHeight:16});
         this.load.spritesheet("life", "assets/sps/life.png", {frameWidth:32,frameHeight:11});
+        this.load.spritesheet("gainLife", "assets/sps/life.png", {frameWidth:11,frameHeight:11});
+        this.load.spritesheet("laser", "assets/sps/laser.png", {frameWidth:16,frameHeight:13});
         this.load.bitmapFont("font","assets/font/font.png","assets/font/font.xml");
         this.load.audio("lasergun",["assets/audio/lasergun.ogg","assets/audio/lasergun.mp3"]);
         this.load.audio("explosionSound",["assets/audio/explosion.ogg","assets/audio/explosion.mp3"]);
@@ -125,12 +128,32 @@ class scene1 extends Phaser.Scene
             repeat: -1,
         });
 
-        // this.anims.create({
-        //     key: "hurt_anim"+lf,
-        //     frames: this.anims.generateFrameNumbers("life", hurt_no[lf - 1]),
-        //     frameRate: 15,
-        //     repeat: 0,
-        // });
+        this.anims.create({
+            key: "laser",
+            frames: this.anims.generateFrameNumbers("laser",{
+                start:0,
+                end:1
+            }),
+            frameRate: 15,
+            repeat: -1,
+        });
+
+        this.anims.create({
+            key: "gainLife",
+            frames: this.anims.generateFrameNumbers("gainLife",{
+                start:12,
+                end:13
+            }),
+            frameRate: 15,
+            repeat: -1,
+        });
+
+        this.anims.create({
+            key: "hurt_anim"+lf,
+            frames: this.anims.generateFrameNumbers("life", hurt_no[lf - 1]),
+            frameRate: 1,
+            repeat: 0,
+        });
 
         this.anims.create({
             key: "hurt_anim"+2,
