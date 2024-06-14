@@ -56,14 +56,59 @@ class scene1 extends Phaser.Scene
         color: 'blue',
         align: 'center' });
 
-        this.add.text(config.width/2+150,config.height/2,"version 1.8.1",{ fontSize: '15px', align: 'center'});
-        this.add.text(config.width/2-170,config.height/2+100,"Click to Start",{ fontSize: '40px', align: 'center'});
-        this.input.on('pointerdown', function () {
+        this.add.text(config.width/2+150,config.height/2,"version 1.8.1",{ fontSize: '15px', align: 'center', color: '#f0f0f0'});
+        let play=this.add.text(config.width/2-75,config.height/2+100,"Play",{ 
+            fontSize: '60px', 
+            align: 'center', 
+            fontStyle: 'bold',
+            color: '#32cd32'
+        }).setInteractive();
+
+        play.on('pointerdown', () => {
             this.startgame.stop();
             this.scene.start("playgame");
-        }, this);
+        });
 
-        this.add.text(config.width-175,config.height-20,"\u00A9 Abhibhav Om Tyagi", { fontSize: '15px', color: 'yellow',});
+        play.on('pointerover', () => {
+            play.setStyle({ fill: '#ffff00' });
+            play.setScale(1.2);
+            play.x-=10;
+            this.input.setDefaultCursor('pointer');
+        });
+
+        play.on('pointerout', () => {
+            play.setStyle({ fill: '#32cd32' });
+            play.setScale(1);
+            play.x+=10;
+            this.input.setDefaultCursor('default');
+        });
+
+        let instructionsText = this.add.text(config.width / 2-75, config.height / 2 + 200, "Instructions", {
+            fontSize: '20px',
+            color: '#ff6f61',
+            align: 'center',
+            fontStyle: 'bold'
+        }).setInteractive();
+
+        instructionsText.on('pointerdown', () => {
+            this.showInstructionsPopup();
+        });
+
+        instructionsText.on('pointerover', () => {
+            instructionsText.setStyle({ fill: '#ffff00' });
+            instructionsText.setScale(1.2);
+            instructionsText.x-=10;
+            this.input.setDefaultCursor('pointer');
+        });
+
+        instructionsText.on('pointerout', () => {
+            instructionsText.setStyle({ fill: '#ff6f61' });
+            instructionsText.setScale(1);
+            instructionsText.x+=10;
+            this.input.setDefaultCursor('default');
+        });
+
+        this.add.text(config.width-175,config.height-20,"\u00A9 Abhibhav Om Tyagi", { fontSize: '15px', color: 'white',});
 
         this.anims.create({
             key: "anim_ship1",
@@ -179,5 +224,45 @@ class scene1 extends Phaser.Scene
 
     update(){
         this.home.tilePositionY-=0.3;
+    }
+
+    showInstructionsPopup() {
+        let popupBackground = this.add.graphics();
+        popupBackground.fillStyle(0x000000, 0.7);
+        popupBackground.fillRect(0, 0, this.cameras.main.width, this.cameras.main.height);
+
+        let popup = this.add.container(this.cameras.main.width / 2, this.cameras.main.height / 2);
+
+        let popupBox = this.add.graphics();
+        popupBox.fillStyle(0xffffff, 1);
+        popupBox.fillRoundedRect(-200, -150, 400, 350, 15);
+        popupBox.lineStyle(2, 0x000000, 1);
+        popupBox.strokeRoundedRect(-200, -150, 400, 350, 15);
+        popup.add(popupBox);
+
+        let instructions = "Instructions:\n\n1. Use arrow keys to move.\n\n2. Press space to shoot.\n\n3. Avoid enemies and collect power-ups.\n\n4. Survive as long as you can!\n\n5. Charger Plug-in is recommended (it might affect the game speed)";
+        let instructionsText = this.add.text(0, 0, instructions, {
+            fontSize: '20px',
+            color: '#000000',
+            align: 'center',
+            wordWrap: { width: 350, useAdvancedWrap: true }
+        });
+        instructionsText.setOrigin(0.5);
+        popup.add(instructionsText);
+
+        let closeButton = this.add.text(0, 180, "Close", {
+            fontSize: '24px',
+            color: '#ff0000',
+            fontStyle: 'bold'
+        }).setInteractive();
+        closeButton.setOrigin(0.5);
+        popup.add(closeButton);
+
+        closeButton.on('pointerdown', () => {
+            popupBackground.destroy();
+            popup.destroy();
+        });
+
+        this.add.existing(popup);
     }
 }
