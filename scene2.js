@@ -117,17 +117,17 @@ class scene2 extends Phaser.Scene
             if(this.bulletCount<max_bullet)
                 this.bulletCount++;
         }
-        if(timer%((mod+30)/2)==0 && timer!=0)
+        if(timer%((mod+100)/2)==0 && timer!=0)
         {
             if(this.ship3.y>10 && this.ship3.y<config.height-200)
                 this.enemyLaser(this.ship3);
         }
-        if(timer%((mod+20)/2)==0 && timer!=0)
+        if(timer%((mod+50)/2)==0 && timer!=0)
         {
             if(this.ship2.y>10 && this.ship2.y<config.height-200)
                 this.enemyLaser(this.ship2);
         }
-        if(timer%((mod+10)/3)==0 && timer!=0)
+        if(timer%((mod)/2)==0 && timer!=0)
         {
             if(this.ship1.y>10 && this.ship1.y<config.height-200)
                 this.enemyLaser(this.ship1);
@@ -149,14 +149,14 @@ class scene2 extends Phaser.Scene
         {
             if(lf==1)
             {
-                if (Phaser.Math.Between(0, 99999) <=power+9) {
+                if (Phaser.Math.Between(0, 99999) <=power+99) {
                     this.resetPowerUp(gainLife);
                     gainLife.setActive(true).setVisible(true);
                 }
             }
             else
             {
-                if (Phaser.Math.Between(0, 99999) <=power+4) {
+                if (Phaser.Math.Between(0, 99999) <=power+49) {
                     this.resetPowerUp(gainLife);
                     gainLife.setActive(true).setVisible(true);
                 }
