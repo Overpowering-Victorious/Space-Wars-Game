@@ -399,6 +399,7 @@ class scene2 extends Phaser.Scene
 
     shootBeam()
     {
+        if(this.bulletCount==0) return;
         var beam=new Beam(this);
         this.bulletCount--;
         this.lasergun.play();
