@@ -4,13 +4,14 @@ This is a Web Application Game named Space Wars, developed in JavaScript and Pha
 Hope you enjoy it 😊.
 
 <p align="center">
-  <img src="https://github.com/Overpowering-Victorious/Space-Wars-Game/blob/main/SS/1.png" height="350" style="margin-right: 20px;">
-  <img src="https://github.com/Overpowering-Victorious/Space-Wars-Game/blob/main/SS/2.png" height="350">
+  <img src="https://github.com/Overpowering-Victorious/Space-Wars-Game/blob/main/SS/1.png" height="400" style="margin-right: 50px;">
+  <img src="https://github.com/Overpowering-Victorious/Space-Wars-Game/blob/main/SS/2.png" height="400">
 </p>
 
 <p align="center">
-  <img src="https://github.com/Overpowering-Victorious/Space-Wars-Game/blob/main/SS/3.png" height="350" style="margin-right: 20px;">
-  <img src="https://github.com/Overpowering-Victorious/Space-Wars-Game/blob/main/SS/4.png" height="350">
+  <img src="https://github.com/Overpowering-Victorious/Space-Wars-Game/blob/main/SS/3.png" height="400" style="margin-right: 50px;">
+  <img src="https://github.com/Overpowering-Victorious/Space-Wars-Game/blob/main/SS/4.png" height="400">
 </p>
+
 
 
